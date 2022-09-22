@@ -43,5 +43,5 @@ jobs:
          docker rm quotebot
          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}
          docker image prune -f
-         docker run -d --name quotebot -e ${{ secrets.DISCORD_TOKEN }} --mount type=bind,source=/root/quoteBot/quotes,target=/quotes ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}
+         docker run -d --name quotebot -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} --mount type=bind,source=/root/quoteBot/quotes,target=/quotes ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}
          

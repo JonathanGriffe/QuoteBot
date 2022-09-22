@@ -10,7 +10,7 @@ import youtube_dl
 import os
 from shutil import copyfile
 
-token = os.environ.get("QUOTEBOT_TOKEN")
+token = os.environ.get("DISCORD_TOKEN")
 
 def init():
     client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
