@@ -155,7 +155,7 @@ def init():
     @client.command()
     async def stop(ctx):
         if(client.vc != None):
-            await client.vc.disconnect()
+            await client.vc.stop()
         client.vc = None
 
     @client.command()
