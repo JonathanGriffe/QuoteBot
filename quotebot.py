@@ -159,28 +159,37 @@ def init():
         client.vc = None
 
     @client.command()
-    async def addas(ctx, nom):
-        nbquotes += 1
-        copyfile('temp.mp3', "./quotes/"+str(nbquotes)+" "+nom+".mp3")
-        quotes.append("./quotes/"+str(nbquotes)+" "+nom+".mp3")
-        @client.command(name=str(nbquotes))
-        async def _(ctx):
-            channel = ctx.author.voice.channel
-            await playaudios([quotes[int(ctx.command.name)-1]], channel)
-        await ctx.channel.send("Quote " + "./quotes/"+str(nbquotes)+" "+nom + ".mp3 added")
+    async def addas(ctx, nom, indexed=True):
+        if indexed:
+            nbquotes += 1
+            name = 'temp.mp3', "./quotes/"+str(nbquotes)+" "+nom+".mp3"
+            @client.command(name=str(nbquotes))
+            async def _(ctx):
+                channel = ctx.author.voice.channel
+                await playaudios([quotes[int(ctx.command.name)-1]], channel)
+        else:
+            name = 'temp.mp3', "./quotes/" + nom + ".mp3"
+        copyfile('temp.mp3', name)
+        quotes.append(name)
+        
+        await ctx.channel.send("Quote " + name)
 
 
     @client.command()
-    async def add(ctx):
+    async def add(ctx, indexed=True):
         att = ctx.message.attachments[0]
-        nbquotes += 1
-        await att.save("./quotes/"+str(nbquotes)+" "+att.filename)
-        quotes.append("./quotes/"+str(nbquotes)+" "+att.filename)
-        @client.command(name=str(nbquotes))
-        async def _(ctx):
-            channel = ctx.author.voice.channel
-            await playaudios([quotes[int(ctx.command.name)-1]], channel)
-        await ctx.channel.send("Quote " + "./quotes/"+str(nbquotes)+" "+att.filename + " added")
+        if indexed:
+            name = './quotes' + str(nbquotes) + ' ' + att.filename
+            nbquotes += 1
+            @client.command(name=str(nbquotes))
+            async def _(ctx):
+                channel = ctx.author.voice.channel
+                await playaudios([quotes[int(ctx.command.name)-1]], channel)
+        else:
+             name = './quotes' + att.filename
+        await att.save(name)
+        quotes.append(name)
+        await ctx.channel.send("Quote " + name)
 
     @client.command()
     async def addytt(ctx, vid, debut, fin):
