@@ -5,6 +5,7 @@ import asyncio
 import glob
 import ffmpeg
 import random
+import re
 import time
 import youtube_dl
 import os
@@ -21,8 +22,8 @@ def init():
     # Load greets quotes and users
     try:
         file = open('quotes/greets.txt', 'r')
-        greetids = next(file)[:-1].split(',')
-        greetquotes = next(file)[:-1].split(',')
+        greetids = next(file)[:-1].split(',') # [:-1] to remove the newline
+        greetquotes = next(file).split(',')
         file.close()
     except (FileNotFoundError) as e:
         greetids = []
@@ -32,25 +33,33 @@ def init():
 
 
     # Search for quotes in quotes folder
-    while True:
-        nbquotes += 1
-        quoteNames = glob.glob('./quotes/'+str(nbquotes)+' *.mp3')
-        if len(quoteNames) == 0:
-            nbquotes -= 1
-            break
-        for fileName in quoteNames:
-            quotes.append(fileName)
+    quoteNames = glob.glob('./quotes/*.mp3')
+    pattern = re.compile("(?<=./quotes/)([0-9]+)")
 
-        @client.command(name=str(nbquotes))
-        async def _(ctx):
-            channel = ctx.author.voice.channel
-            await playaudios([quotes[int(ctx.command.name)-1]], channel)
+    otherQuotes = []
+    for quote in quoteNames:
+        match = pattern.search(quote)
+        if match:
+            nb = match.group(0)
+            nbquotes += 1
+            for i in range(int(nb) - len(quotes)):
+                quotes.append(None)
+            quotes[int(nb) - 1] = quote
 
-        def find(string):
-            for str in quotes:
-                if(str.lower().find(string.lower()) != -1):
-                    return str
-            return
+            @client.command(name=nb)
+            async def _(ctx):
+                channel = ctx.author.voice.channel
+                await playaudios([quotes[int(ctx.command.name)-1]], channel)
+        else:
+            otherQuotes.append(quote)
+
+    quotes.extend(otherQuotes)
+
+    def find(string):
+        for str in quotes:
+            if(str.lower().find(string.lower()) != -1):
+                return str
+        return
 
     @client.event
     async def on_ready():
@@ -80,7 +89,7 @@ def init():
             await ctx.channel.send('Quote not found. The name shouldnt include the folder or .mp3')
         else:
             try:
-                index = greetids.index(ctx.author.id)
+                index = greetids.index(str(ctx.author.id))
                 greetquotes[index] = fullquote
                 jointime[index] = 0
             except ValueError:
