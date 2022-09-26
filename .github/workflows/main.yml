@@ -26,7 +26,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest
+          tags: jonathangriffe/quotebot:latest
           
   deploy:
     needs: build_and_push
@@ -41,7 +41,6 @@ jobs:
         script: |
          docker stop quotebot
          docker rm quotebot
-         docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}
+         docker pull jonathangriffe/quotebot
          docker image prune -f
-         docker run -d --name quotebot -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} --mount type=bind,source=/root/quoteBot/quotes,target=/quotes ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}
-         
+         docker run -d --name quotebot -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} --mount type=bind,source=/root/quoteBot/quotes,target=/quotes jonathangriffe/quotebot
