@@ -144,15 +144,6 @@ def init():
         await playaudios([quotes[i-1]], channel)
 
     @client.command()
-    async def signal(ctx):
-        if(client.vc != None and client.vc.is_playing()):
-            return
-        for channel in ctx.guild.voice_channels:
-            if(len(channel.members) !=0):
-                await playaudios([quotes[52]], channel)
-
-
-    @client.command()
     async def stop(ctx):
         if(client.vc != None):
             await client.vc.stop()
@@ -233,7 +224,7 @@ def init():
             for i in range(len(greetids)):
                 if(member.id == int(greetids[i]) and time.time() - jointime[i] > 60*60*5):
                     jointime[i] = time.time()
-                    await playaudios([quotes[59], greetquotes[i]], after.channel)
+                    await playaudios([greetquotes[i]], after.channel)
                     return
 
     return client
